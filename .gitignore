@@ -1,0 +1,4 @@
+*.swp
+GeoLite2-City/*
+*.pyc
+notes.txt
