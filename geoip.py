@@ -4,7 +4,7 @@ import geoip2.database
 import json
 import ipaddress
 
-geoipDbPath = './GeoLite2-City/GeoLite2-City.mmdb'
+geoipDbPath = '/opt/geoip.supermasita.com/GeoLite2-City/GeoLite2-City.mmdb'
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
