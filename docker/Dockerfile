@@ -13,4 +13,6 @@ RUN curl http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz
     && mv /opt/geoip.supermasita.com/GeoLite2-City_2* /opt/geoip.supermasita.com/GeoLite2-City
     && rm -f /opt/geoip.supermasita.com/GeoLite2-City.tar.gz
 
+EXPOSE 8888
 
+CMD ['python3', '/opt/geoip.supermasita.com/geoip.py']
