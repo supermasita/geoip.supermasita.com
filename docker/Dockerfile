@@ -1,10 +1,17 @@
+#docker run -d --network="web" -v /opt/docker-mounts/opt/geoip.supermasita.com:/opt/geoip.supermasita.com -p 8888:8888  --name="geoip" -t geoip
+
 FROM ubuntu
 
 ENV UPDATED "2018-04-04"
 
-# To do: avoid using git, use curl https://github.com/supermasita/geoip.supermasita.com/archive/master.zip
-RUN apt-get update && apt-get install -y git python3-pip curl
-RUN git clone https://github.com/supermasita/geoip.supermasita.com.git /opt/geoip.supermasita.com
+RUN apt-get update \
+    && apt-get install -y git python3-pip curl unzip
+
+RUN cd /opt/ \
+    && curl https://codeload.github.com/supermasita/geoip.supermasita.com/zip/master -o master.zip \
+    && unzip master.zip \
+    && mv geoip.supermasita.com-master geoip.supermasita.com \
+    && rm -f master.zip
 
 RUN cd /opt/geoip.supermasita.com && pip3 install -r requirements.txt
 
