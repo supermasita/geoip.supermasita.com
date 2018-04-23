@@ -1,17 +1,25 @@
 import tornado.ioloop
 import tornado.web
+import tornado.options
+import tornado.httpserver
 import geoip2.database
 import json
 import ipaddress
+import os.path
 
-geoipDbPath = '/opt/geoip.supermasita.com/GeoLite2-City/GeoLite2-City.mmdb'
+from tornado.options import define, options 
+
+define("port", default=8888, help="run on the given port", type=int)
+
+geoipDbPath = os.path.join(os.path.dirname(__file__), 'GeoLite2-City/GeoLite2-City.mmdb')
+
 
 class ip():
 
     def get_geo(remote_ip):
-         
          dbReader = geoip2.database.Reader(geoipDbPath)
          try:
+             ip.is_ip(remote_ip)
              response = dbReader.city(remote_ip)
              return response
          except:
@@ -28,67 +36,16 @@ class ip():
              raise ValueError
 
 
-class jsonHandler(tornado.web.RequestHandler):
-
-    def get(self):
-
-         # Checking remote_ip or query string?
-         if self.get_arguments('ip'):
-             remote_ip = self.get_arguments('ip', strip=True)
-             remote_ip = remote_ip[0]
-         elif self.request.headers.get("X-Real-IP") :
-             remote_ip = self.request.headers.get("X-Real-IP") 
-         elif self.request.headers.get("X-Forwarded-For") :
-             remote_ip = self.request.headers.get("X-Forwarded-For") 
-         else:
-             remote_ip = self.request.remote_ip 
-
-         #
-         user_agent = self.request.headers.get("User-Agent")
-
-         # IP or not? 
-         try:
-             ip.is_ip(remote_ip)
-         #except ipaddress.AddressValueError:
-         except ValueError:
-             self.set_status(400)
-             jsonErrorMsg = { 'status': 400, 'description': 'Not a valid IP'}
-             self.finish(jsonErrorMsg)
-             return
-
-
-         # Check if exists in DB 
-         try:
-             response = ip.get_geo(remote_ip)
-         #except geoip2.errors.AddressNotFoundError:
-         except ValueError:
-             self.set_status(400)
-             jsonErrorMsg = { 'status': 400, 'description': 'IP not found in GeoLite2 database1'}
-             self.finish(jsonErrorMsg)
-             return
-
-
-         # IP info
-         jsonGeoip = {}	
-         jsonGeoip = vars(response)
-         del jsonGeoip['raw']
-         del jsonGeoip['maxmind']
-      
-         # Review this header workaround 
-         self.set_header('Content-Type', 'application/json') 
-         self.set_header('Max-age', '3600')
- 
-         self.write(json.dumps(jsonGeoip, default=lambda o: o.__dict__))
-         
-
 class MainHandler(tornado.web.RequestHandler):
 
     def get(self):
 
+         not_my_ip = False 
          # Checking remote_ip or query string?
          if self.get_arguments('ip'):
              remote_ip = self.get_arguments('ip', strip=True)
              remote_ip = remote_ip[0]
+             not_my_ip = True
          elif self.request.headers.get("X-Real-IP") :
              remote_ip = self.request.headers.get("X-Real-IP") 
          else:
@@ -97,48 +54,54 @@ class MainHandler(tornado.web.RequestHandler):
          #
          user_agent = self.request.headers.get("User-Agent")
 
-         # IP or not? 
-         try:
-             ip.is_ip(remote_ip)
-         #except ipaddress.AddressValueError:
-         except ValueError:
-             self.set_status(400)
-             jsonErrorMsg = { 'status': 400, 'description': 'Not a valid IP'}
-             self.finish(jsonErrorMsg)
-             return
-
 
          # Check if exists in DB 
          try:
              response = ip.get_geo(remote_ip)
-         #except geoip2.errors.AddressNotFoundError:
          except ValueError:
              self.set_status(400)
-             jsonErrorMsg = { 'status': 400, 'description': 'IP not found in GeoLite2 database1'}
+             jsonErrorMsg = { 'status': 400, 'description': 'IP not valid or not found in GeoLite2 database'}
              self.finish(jsonErrorMsg)
              return
 
-
          # IP info
-         jsonGeoip = {}	
-         jsonGeoip = vars(response)
-         del jsonGeoip['raw']
-         del jsonGeoip['maxmind']
-      
-         # Review this header workaround 
-         self.set_header('Content-Type', 'application/json') 
+         json_geoip = {}	
+         json_geoip = vars(response)
+         del json_geoip['raw']
+         del json_geoip['maxmind']
+         
+         # Cache headers
          self.set_header('Max-age', '3600')
 
-         self.write(json.dumps(jsonGeoip, default=lambda o: o.__dict__))
+         # Checking remote_ip or query string?
+         if self.get_arguments('json'):
+             # Make json_geoip seriable  
+             json_geoip = json.dumps(json_geoip, default=lambda o: o.__dict__)        
+             # Review this header workaround 
+             self.set_header('Content-Type', 'application/json') 
+             self.write(json_geoip)
+
+         else:
+             self.set_header('Max-age', '3600')
+             self.render('index.html', \
+                         not_my_ip = not_my_ip, remote_ip = remote_ip, user_agent=user_agent, \
+                         country_iso_code = json_geoip['country'].iso_code, \
+                         country_name = json_geoip['country'].name, \
+                         city_names_en = json_geoip['city'].name, \
+                         latitude = json_geoip['location'].latitude, \
+                         longitude = json_geoip['location'].longitude, \
+                         time_zone = json_geoip['location'].time_zone, \
+             )
+
          
 
-def make_app():
-    return tornado.web.Application([
-        (r"/", MainHandler),
-        (r"/json/.*", jsonHandler),
-    ])
-
 if __name__ == "__main__":
-    app = make_app()
-    app.listen(8888)
-    tornado.ioloop.IOLoop.current().start()
+    tornado.options.parse_command_line()
+    app = tornado.web.Application(
+    	handlers=[
+        (r"/", MainHandler)],
+        template_path = os.path.join(os.path.dirname(__file__), "templates"),
+    )
+    http_server = tornado.httpserver.HTTPServer(app)
+    http_server.listen(options.port)
+    tornado.ioloop.IOLoop.instance().start()

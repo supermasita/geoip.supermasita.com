@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>What is my IP address and user agent?</title>
+<meta name="author" content="https://github.com/supermasita/geoip.supermasita.com">
+</head>
+<body>
+    {% if not_my_ip == False %}
+    <h1>What is my IP address and user agent?</h1>
+    <ul>
+    	<li>IP: <b>{{ remote_ip }}</b></li>
+	<li>User agent: "<i>{{ user_agent }}</i>"</li>
+    {% else %}
+    <h1>What is {{ remote_ip }}'s information?</h1>
+    <ul>
+    	<li>IP: <b>{{ remote_ip }}</b></li>
+    {% end %}
+    <li>Country: {{ country_name }} ({{ country_iso_code }})</li>
+    <li>City: {{ city_names_en }}</li>
+    <li>Latitude: {{ latitude }}</li>
+    <li>Longitude: {{ longitude }}</li>
+    <li>Time zone: {{ time_zone }}</li>
+    </ul>
+    <h3>Get full IP information requesting a JSON: 
+    {% if not_my_ip == False %}
+    {% apply linkify %}https://geoip.supermasita.com/?json{% end %}
+    {% else %}
+    {% apply linkify %}https://geoip.supermasita.com/?ip={{ remote_ip }}&json{% end %}
+    {% end %}
+    </h3>
+    <i>We use GeoLite2 data created by MaxMind, available from {% apply linkify %}http://www.maxmind.com{% end %}.</i>
+</body>
+</html>
