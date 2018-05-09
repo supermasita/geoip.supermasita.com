@@ -29,6 +29,6 @@
     {% apply linkify %}https://geoip.supermasita.com/?ip={{ remote_ip }}&json{% end %}
     {% end %}
     </h3>
-    <i>We use GeoLite2 data created by MaxMind, available from {% apply linkify %}http://www.maxmind.com{% end %}.</i>
+    <i>We use GeoLite2 data created by MaxMind (updated {{ geoipDbMtime }}), available from {% apply linkify %}http://www.maxmind.com{% end %}.</i>
 </body>
 </html>

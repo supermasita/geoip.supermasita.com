@@ -6,13 +6,13 @@ import geoip2.database
 import json
 import ipaddress
 import os.path
+import time
 
 from tornado.options import define, options 
 
 define("port", default=8888, help="run on the given port", type=int)
 
 geoipDbPath = os.path.join(os.path.dirname(__file__), 'GeoLite2-City/GeoLite2-City.mmdb')
-
 
 class ip():
 
@@ -51,6 +51,11 @@ class MainHandler(tornado.web.RequestHandler):
          else:
              remote_ip = self.request.remote_ip 
 
+         # unique cahcing per ip
+         if not_my_ip is False:
+             self.set_header('vary', remote_ip)
+
+
          #
          user_agent = self.request.headers.get("User-Agent")
 
@@ -69,7 +74,7 @@ class MainHandler(tornado.web.RequestHandler):
          json_geoip = vars(response)
          del json_geoip['raw']
          del json_geoip['maxmind']
-         
+
          # Cache headers
          self.set_header('Max-age', '3600')
 
@@ -91,6 +96,7 @@ class MainHandler(tornado.web.RequestHandler):
                          latitude = json_geoip['location'].latitude, \
                          longitude = json_geoip['location'].longitude, \
                          time_zone = json_geoip['location'].time_zone, \
+         		 geoipDbMtime = time.ctime(os.path.getmtime(geoipDbPath))
              )
 
          
