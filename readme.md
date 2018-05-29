@@ -1,5 +1,5 @@
 # Python Tornado based GeoLite2 City service
-* Get information for your IP or any other (user "/?ip=xxx.xxxx.xxx.xxx")
+* Get information for your IP or any other (use "/?ip=xxx.xxxx.xxx.xxx")
 * Choose HTML or JSON output
 
 **Give it a try! https://geoip.supermasita.com** 

@@ -7,28 +7,40 @@
 </head>
 <body>
     {% if not_my_ip == False %}
-    <h1>What is my IP address and user agent?</h1>
-    <ul>
-    	<li>IP: <b>{{ remote_ip }}</b></li>
-	<li>User agent: "<i>{{ user_agent }}</i>"</li>
+    	<h1>What is my IP address?</h1>
+    	<ul>
+    		<li>IP: <b>{{ remote_ip }}</b></li>
     {% else %}
-    <h1>What is {{ remote_ip }}'s information?</h1>
-    <ul>
-    	<li>IP: <b>{{ remote_ip }}</b></li>
+    	<h1>What is {{ remote_ip }}'s information?</h1>
+    	<ul>
+    		<li>IP: <b>{{ remote_ip }}</b></li>
     {% end %}
-    <li>Country: {{ country_name }} ({{ country_iso_code }})</li>
-    <li>City: {{ city_names_en }}</li>
-    <li>Latitude: {{ latitude }}</li>
-    <li>Longitude: {{ longitude }}</li>
-    <li>Time zone: {{ time_zone }}</li>
-    </ul>
-    <h3>Get full IP information requesting a JSON: 
-    {% if not_my_ip == False %}
-    {% apply linkify %}https://geoip.supermasita.com/?json{% end %}
-    {% else %}
-    {% apply linkify %}https://geoip.supermasita.com/?ip={{ remote_ip }}&json{% end %}
-    {% end %}
-    </h3>
-    <i>We use GeoLite2 data created by MaxMind (updated {{ geoipDbMtime }}), available from {% apply linkify %}http://www.maxmind.com{% end %}.</i>
+    		<li>Country: {{ country_name }} ({{ country_iso_code }})</li>
+    		<li>City: {{ city_names_en }}</li>
+    		<li>Latitude: {{ latitude }}</li>
+    		<li>Longitude: {{ longitude }}</li>
+    		<li>Time zone: {{ time_zone }}</li>
+    	</ul>
+    <h3>More uses:</h3>
+	<ul>
+    	{% if not_my_ip == False %}
+    		<li>Get your IP's full information requesting a JSON: 
+    		{% apply linkify %}https://geoip.supermasita.com/?json{% end %}
+    		</li>
+    		<li>Get any IP's information: 
+    		{% apply linkify %}https://geoip.supermasita.com/?ip={{ remote_ip }}{% end %}
+    		</li>
+    	{% else %}
+    		<li>Get full IP information requesting a JSON: 
+    		{% apply linkify %}https://geoip.supermasita.com/?ip={{ remote_ip }}&json{% end %}
+    		</li>
+    	{% end %}
+    	</ul>
+    <h4>Credits</h4>
+    	<ul>
+		<li><i>We use GeoLite2 data created by MaxMind (updated {{ geoipDbMtime }}), available from {% apply linkify %}http://www.maxmind.com{% end %}.</i></li>
+		<li>{% apply linkify %}https://github.com/supermasita/geoip.supermasita.com{% end %}</li>
+    	</ul>
+
 </body>
 </html>

@@ -8,10 +8,14 @@ import ipaddress
 import os.path
 import time
 
+from datetime import datetime, timedelta
 from tornado.options import define, options 
 
+
+# App setup
 define("port", default=8888, help="run on the given port", type=int)
 
+# DB location 
 geoipDbPath = os.path.join(os.path.dirname(__file__), 'GeoLite2-City/GeoLite2-City.mmdb')
 
 class ip():
@@ -51,14 +55,12 @@ class MainHandler(tornado.web.RequestHandler):
          else:
              remote_ip = self.request.remote_ip 
 
-         # unique cahcing per ip
+         # unique caching per ip
          if not_my_ip is False:
              self.set_header('vary', remote_ip)
 
-
-         #
+         # UA is retrieved and passed to template, but not currently used
          user_agent = self.request.headers.get("User-Agent")
-
 
          # Check if exists in DB 
          try:
@@ -77,6 +79,11 @@ class MainHandler(tornado.web.RequestHandler):
 
          # Cache headers
          self.set_header('Max-age', '3600')
+         self.set_header('Cache-control', 'public')
+         
+         expires = datetime.utcnow() + timedelta(hours=1)
+         expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
+         self.set_header('Expires', expires)
 
          # Checking remote_ip or query string?
          if self.get_arguments('json'):
