@@ -1,0 +1,1 @@
+0 3 * * * /usr/bin/geoipupdate -v -f /opt/geoip.supermasita.com/GeoLite2-City-Update.conf -d /opt/geoip.supermasita.com/GeoLite2-City/ > /tmp/GeoLite2-City-Update.cron.out 2>&1

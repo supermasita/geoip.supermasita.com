@@ -72,37 +72,35 @@ class MainHandler(tornado.web.RequestHandler):
              return
 
          # IP info
-         json_geoip = {}	
-         json_geoip = vars(response)
-         del json_geoip['raw']
-         del json_geoip['maxmind']
+         geoip_response = {}	
+         geoip_response = vars(response)
+         del geoip_response['raw']
+         del geoip_response['maxmind']
 
          # Cache headers
-         self.set_header('Max-age', '3600')
-         self.set_header('Cache-control', 'public')
-         
          expires = datetime.utcnow() + timedelta(hours=1)
          expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
          self.set_header('Expires', expires)
+         self.set_header('Max-age', '3600')
+         self.set_header('Cache-control', 'public')
 
          # Checking remote_ip or query string?
          if self.get_arguments('json'):
-             # Make json_geoip seriable  
-             json_geoip = json.dumps(json_geoip, default=lambda o: o.__dict__)        
+             # Make geoip_response seriable  
+             geoip_response = json.dumps(geoip_response, default=lambda o: o.__dict__)        
              # Review this header workaround 
              self.set_header('Content-Type', 'application/json') 
-             self.write(json_geoip)
+             self.write(geoip_response)
 
          else:
-             self.set_header('Max-age', '3600')
              self.render('index.html', \
                          not_my_ip = not_my_ip, remote_ip = remote_ip, user_agent=user_agent, \
-                         country_iso_code = json_geoip['country'].iso_code, \
-                         country_name = json_geoip['country'].name, \
-                         city_names_en = json_geoip['city'].name, \
-                         latitude = json_geoip['location'].latitude, \
-                         longitude = json_geoip['location'].longitude, \
-                         time_zone = json_geoip['location'].time_zone, \
+                         country_iso_code = geoip_response['country'].iso_code, \
+                         country_name = geoip_response['country'].name, \
+                         city_names_en = geoip_response['city'].name, \
+                         latitude = geoip_response['location'].latitude, \
+                         longitude = geoip_response['location'].longitude, \
+                         time_zone = geoip_response['location'].time_zone, \
          		 geoipDbMtime = time.ctime(os.path.getmtime(geoipDbPath))
              )
 

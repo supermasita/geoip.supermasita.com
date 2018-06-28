@@ -5,3 +5,5 @@
 **Give it a try! https://geoip.supermasita.com** 
 
 *We use GeoLite2 data created by MaxMind, available from http://www.maxmind.com.*
+
+For DB update, please have a look at https://dev.maxmind.com/geoip/geoipupdate/
