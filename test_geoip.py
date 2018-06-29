@@ -13,14 +13,14 @@ class TestStringMethods(unittest.TestCase):
         geoip_response = vars(response)
         self.assertEqual(geoip_response['country'].iso_code, "AR")
 
-    #def test_tornado_json(self):
-    #    geoip_response = requests.get("http://127.0.0.1:8888/?ip=200.42.143.3&json")
-    #    geoip_response = geoip_response.json()
-    #    self.assertEqual(geoip_response['country']['iso_code'], "AR")
-    #
-    #def test_tornado(self):
-    #    geoip_response = requests.get("http://127.0.0.1:8888/?ip=200.42.143.3")
-    #    self.assertRegex(geoip_response.text, "IP: <b>200.42.143.3<\/b>")
+    def test_tornado_json(self):
+        geoip_response = requests.get("http://127.0.0.1:8888/?ip=200.42.143.3&json")
+        geoip_response = geoip_response.json()
+        self.assertEqual(geoip_response['country']['iso_code'], "AR")
+    
+    def test_tornado(self):
+        geoip_response = requests.get("http://127.0.0.1:8888/?ip=200.42.143.3")
+        self.assertRegex(geoip_response.text, "IP: <b>200.42.143.3<\/b>")
 
 if __name__ == '__main__':
     unittest.main()
