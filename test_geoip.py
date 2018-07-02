@@ -5,7 +5,7 @@ from geoip import *
 class TestStringMethods(unittest.TestCase):
 
     def test_is_ip_ipv4(self):
-        self.assertEqual(ip.is_ip('200.143.1.121'), '200.143.1.121')
+        self.assertEqual(ip.is_ip('200.143.1.121'), IPv4Address('200.143.1.121'))
     
     def test_get_geo_ipv4(self):
         response = ip.get_geo('200.42.143.3')
@@ -23,7 +23,7 @@ class TestStringMethods(unittest.TestCase):
         self.assertRegex(geoip_response.text, "IP: <b>200.42.143.3<\/b>")
     
     def test_is_ip_ipv6(self):
-        self.assertEqual(ip.is_ip('600:8801:9400:5a1:948b:ab15:dde3:61a3'), '600:8801:9400:5a1:948b:ab15:dde3:61a3')
+        self.assertEqual(ip.is_ip('600:8801:9400:5a1:948b:ab15:dde3:61a3'), IPv6Address('600:8801:9400:5a1:948b:ab15:dde3:61a3'))
     
     def test_get_geo_ipv6(self):
         response = ip.get_geo('600:8801:9400:5a1:948b:ab15:dde3:61a3')
