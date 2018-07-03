@@ -1,4 +1,8 @@
 language: python
+cache:
+  - pip
+  #directories:
+  #- ./GeoLite2-City
 python:
   - "3.4"
   - "3.5"

@@ -34,8 +34,7 @@ class ip():
     def is_ip(remote_ip):
          # IP or not? 
          try:
-             return ipaddress.IPv4Address(remote_ip)
-         #except ipaddress.AddressValueError:
+             return ipaddress.ip_address(remote_ip)
          except:
              raise ValueError
 
