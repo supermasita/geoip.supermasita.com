@@ -17,7 +17,7 @@ define("port", default=8888, help="run on the given port", type=int)
 
 # DB location
 geoipDbPath = os.path.join(os.path.dirname(
-    __file__), 'GeoLite2-City/GeoLite2-City.mmdb')
+    __file__), '/var/lib/GeoIP/GeoLite2-City.mmdb')
 
 
 class ip():

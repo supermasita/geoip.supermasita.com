@@ -1,11 +1,17 @@
 #docker run -d --network="web" -v /opt/docker-mounts/opt/geoip.supermasita.com:/opt/geoip.supermasita.com -p 8888:8888  --name="geoip" -t geoip
 
-FROM ubuntu
+FROM ubuntu:18.04
 
-ENV UPDATED "2018-04-04"
+ENV UPDATED "2018-07-04"
+
+RUN apt-get update && apt-get install -y gnupg
+
+RUN echo "deb http://ppa.launchpad.net/maxmind/ppa/ubuntu bionic main" >> /etc/apt/source.list
+
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F44B38CE3DB1BF64B61DBD28DE1997DCDE742AFA 
 
 RUN apt-get update \
-    && apt-get install -y git python3-pip curl unzip
+    && apt-get install -y git python3-pip curl unzip cron geoipupdate supervisor 
 
 RUN cd /opt/ \
     && curl https://codeload.github.com/supermasita/geoip.supermasita.com/zip/master -o master.zip \
@@ -15,11 +21,13 @@ RUN cd /opt/ \
 
 RUN cd /opt/geoip.supermasita.com && pip3 install -r requirements.txt
 
-RUN curl http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz -o /opt/geoip.supermasita.com/GeoLite2-City.tar.gz \
-    && tar xf /opt/geoip.supermasita.com/GeoLite2-City.tar.gz --directory /opt/geoip.supermasita.com/ \
-    && mv /opt/geoip.supermasita.com/GeoLite2-City_2* /opt/geoip.supermasita.com/GeoLite2-City \
-    && rm -f /opt/geoip.supermasita.com/GeoLite2-City.tar.gz
+#RUN curl http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz -o /opt/geoip.supermasita.com/GeoLite2-City.tar.gz \
+#    && tar xf /opt/geoip.supermasita.com/GeoLite2-City.tar.gz --directory /opt/geoip.supermasita.com/ \
+#    && mv /opt/geoip.supermasita.com/GeoLite2-City_2* /opt/geoip.supermasita.com/GeoLite2-City \
+#    && rm -f /opt/geoip.supermasita.com/GeoLite2-City.tar.gz
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf 
 
 EXPOSE 8888
 
-CMD ["/usr/bin/python3", "/opt/geoip.supermasita.com/geoip.py"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
