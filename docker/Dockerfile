@@ -21,10 +21,10 @@ RUN cd /opt/ \
 
 RUN cd /opt/geoip.supermasita.com && pip3 install -r requirements.txt
 
-#RUN curl http://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz -o /opt/geoip.supermasita.com/GeoLite2-City.tar.gz \
-#    && tar xf /opt/geoip.supermasita.com/GeoLite2-City.tar.gz --directory /opt/geoip.supermasita.com/ \
-#    && mv /opt/geoip.supermasita.com/GeoLite2-City_2* /opt/geoip.supermasita.com/GeoLite2-City \
-#    && rm -f /opt/geoip.supermasita.com/GeoLite2-City.tar.gz
+RUN mkdir /opt/geoip.supermasita.com/GeoLite2-City/ \ 
+    && /usr/bin/geoipupdate -d /opt/geoip.supermasita.com/GeoLite2-City/
+
+COPY geoipupdate.cron /etc/cron.d/geoipupdate
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf 
 
