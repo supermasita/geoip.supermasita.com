@@ -6,4 +6,4 @@
 # on the first Tuesday of each month."
 
 # m h dom mon dow user  command
-47 6    * * 3   root    test -x /usr/bin/geoipupdate && /usr/bin/geoipupdate -d /opt/geoip.supermasita.com/GeoLite2-City/
+0 6    * * *   root    test -x /usr/bin/geoipupdate && /usr/bin/geoipupdate -d /opt/geoip.supermasita.com/GeoLite2-City/
