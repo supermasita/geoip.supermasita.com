@@ -26,26 +26,26 @@ class TestStringMethods(unittest.TestCase):
         self.assertRegex(geoip_response.text, "IP: <b>200.42.143.3<\/b>")
 
     def test_is_ip_ipv6(self):
-        self.assertEqual(ip.is_ip('600:8801:9400:5a1:948b:ab15:dde3:61a3'),
-                         ipaddress.IPv6Address('600:8801:9400:5a1:948b:ab15:dde3:61a3'))
+        self.assertEqual(ip.is_ip('2001:4860:4860::8888'),
+                         ipaddress.IPv6Address('2001:4860:4860::8888'))
 
     def test_get_geo_ipv6(self):
-        response = ip.get_geo('600:8801:9400:5a1:948b:ab15:dde3:61a3')
+        response = ip.get_geo('2001:4860:4860::8888')
         geoip_response = {}
         geoip_response = vars(response)
         self.assertEqual(geoip_response['country'].iso_code, "US")
 
     def test_tornado_json_ipv6(self):
         geoip_response = requests.get(
-            "http://127.0.0.1:8888/?ip=600:8801:9400:5a1:948b:ab15:dde3:61a3&json")
+            "http://127.0.0.1:8888/?ip=2001:4860:4860::8888&json")
         geoip_response = geoip_response.json()
         self.assertEqual(geoip_response['country']['iso_code'], "US")
 
     def test_tornado_ipv6(self):
         geoip_response = requests.get(
-            "http://127.0.0.1:8888/?ip=600:8801:9400:5a1:948b:ab15:dde3:61a3")
+            "http://127.0.0.1:8888/?ip=2001:4860:4860::8888")
         self.assertRegex(geoip_response.text,
-                         "IP: <b>600:8801:9400:5a1:948b:ab15:dde3:61a3<\/b>")
+                         "IP: <b>2001:4860:4860::8888<\/b>")
 
 
 if __name__ == '__main__':
