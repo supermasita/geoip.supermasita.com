@@ -20,6 +20,7 @@
     		<li>Latitude: {{ latitude }}</li>
     		<li>Longitude: {{ longitude }}</li>
     		<li>Time zone: {{ time_zone }}</li>
+    		<li>Map: {% apply linkify %}{{ openstreet_url }}{% end %}</li>
     	</ul>
     <h3>More uses:</h3>
 	<ul>

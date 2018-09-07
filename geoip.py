@@ -34,7 +34,8 @@ class ip():
     def is_ip(remote_ip):
          # IP or not? 
          try:
-             return ipaddress.IPv4Address(remote_ip)
+             #return ipaddress.IPv4Address(remote_ip)
+             return ipaddress.ip_address(remote_ip)
          #except ipaddress.AddressValueError:
          except:
              raise ValueError
@@ -74,6 +75,7 @@ class MainHandler(tornado.web.RequestHandler):
          # IP info
          geoip_response = {}	
          geoip_response = vars(response)
+         geoip_response['openstreet_url'] = "https://www.openstreetmap.org/?mlat=%f&mlon=%f#map=5/%f/%f" % (geoip_response['location'].latitude, geoip_response['location'].longitude, geoip_response['location'].latitude, geoip_response['location'].longitude )
          del geoip_response['raw']
          del geoip_response['maxmind']
 
@@ -101,6 +103,7 @@ class MainHandler(tornado.web.RequestHandler):
                          latitude = geoip_response['location'].latitude, \
                          longitude = geoip_response['location'].longitude, \
                          time_zone = geoip_response['location'].time_zone, \
+                         openstreet_url = geoip_response['openstreet_url'], \
          		 geoipDbMtime = time.ctime(os.path.getmtime(geoipDbPath))
              )
 
