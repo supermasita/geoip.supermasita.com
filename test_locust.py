@@ -4,6 +4,7 @@
 from locust import HttpLocust, TaskSet, task
 from faker import Faker
 
+ok_status_codes = [200, 400]
 
 class WebsiteTasks(TaskSet):
 
@@ -12,7 +13,7 @@ class WebsiteTasks(TaskSet):
         fake = Faker()
         with self.client.get('/?ip=%s&json' % (fake.ipv4()),
                              catch_response=True) as response:
-            if response.status_code == 400:
+            if response.status_code in ok_status_codes :
                 response.success()
 
     @task
@@ -20,7 +21,7 @@ class WebsiteTasks(TaskSet):
         fake = Faker()
         with self.client.get('/?ip=%s' % (fake.ipv4()),
                              catch_response=True) as response:
-            if response.status_code == 400:
+            if response.status_code in ok_status_codes :
                 response.success()
 
     @task
@@ -28,7 +29,7 @@ class WebsiteTasks(TaskSet):
         fake = Faker()
         with self.client.get('/?ip=%s' % (fake.ipv6()),
                              catch_response=True) as response:
-            if response.status_code == 400:
+            if response.status_code in ok_status_codes :
                 response.success()
 
     @task
@@ -36,7 +37,7 @@ class WebsiteTasks(TaskSet):
         fake = Faker()
         with self.client.get('/?ip=%s&json' % (fake.ipv6()),
                              catch_response=True) as response:
-            if response.status_code == 400:
+            if response.status_code in ok_status_codes :
                 response.success()
 
 

@@ -80,10 +80,10 @@ class MainHandler(tornado.web.RequestHandler):
         del geoip_response['maxmind']
 
         # Cache headers
-        expires = datetime.utcnow() + timedelta(hours=1)
+        expires = datetime.utcnow() + timedelta(minutes=1)
         expires = expires.strftime("%a, %d %b %Y %H:%M:%S GMT")
         self.set_header('Expires', expires)
-        self.set_header('Max-age', '3600')
+        self.set_header('Max-age', '60')
         self.set_header('Cache-control', 'public')
 
         # Checking remote_ip or query string?
