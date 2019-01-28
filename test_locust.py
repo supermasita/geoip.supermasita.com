@@ -8,7 +8,7 @@ ok_status_codes = [200, 400]
 
 class WebsiteTasks(TaskSet):
 
-    @task
+    @task(10)
     def ipv4_json(self):
         fake = Faker()
         with self.client.get('/?ip=%s&json' % (fake.ipv4()),
@@ -16,7 +16,7 @@ class WebsiteTasks(TaskSet):
             if response.status_code in ok_status_codes :
                 response.success()
 
-    @task
+    @task(10)
     def ipv4(self):
         fake = Faker()
         with self.client.get('/?ip=%s' % (fake.ipv4()),
@@ -24,7 +24,7 @@ class WebsiteTasks(TaskSet):
             if response.status_code in ok_status_codes :
                 response.success()
 
-    @task
+    @task(2)
     def ipv6(self):
         fake = Faker()
         with self.client.get('/?ip=%s' % (fake.ipv6()),
@@ -32,7 +32,7 @@ class WebsiteTasks(TaskSet):
             if response.status_code in ok_status_codes :
                 response.success()
 
-    @task
+    @task(2)
     def ipv6_json(self):
         fake = Faker()
         with self.client.get('/?ip=%s&json' % (fake.ipv6()),
@@ -43,5 +43,5 @@ class WebsiteTasks(TaskSet):
 
 class WebsiteUser(HttpLocust):
     task_set = WebsiteTasks
-    min_wait = 1000
-    max_wait = 5000
+    min_wait = 1
+    max_wait = 10
