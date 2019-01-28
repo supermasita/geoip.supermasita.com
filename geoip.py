@@ -36,7 +36,9 @@ class ip():
     def is_ip(remote_ip):
         # IP or not?
         try:
+            # return ipaddress.IPv4Address(remote_ip)
             return ipaddress.ip_address(remote_ip)
+        # except ipaddress.AddressValueError:
         except:
             raise ValueError
 
@@ -56,20 +58,13 @@ class MainHandler(tornado.web.RequestHandler):
         else:
             remote_ip = self.request.remote_ip
 
-        # unique caching per ip
-        if not_my_ip is False:
-            self.set_header('vary', remote_ip)
-
-        # UA is retrieved and passed to template, but not currently used
-        user_agent = self.request.headers.get("User-Agent")
-
         # Check if exists in DB
         try:
             response = ip.get_geo(remote_ip)
         except ValueError:
             self.set_status(400)
             jsonErrorMsg = {
-                'status': 400, 'description': 'IP not valid or not found in GeoLite2 database'}
+                "status": 400, "description": "IP not valid or not found in GeoLite2 database"}
             self.finish(jsonErrorMsg)
             return
 
@@ -78,6 +73,11 @@ class MainHandler(tornado.web.RequestHandler):
         geoip_response = vars(response)
         del geoip_response['raw']
         del geoip_response['maxmind']
+        try:
+            geoip_response['openstreet_url'] = "https://www.openstreetmap.org/?mlat=%f&mlon=%f#map=5/%f/%f" % (
+                geoip_response['location'].latitude, geoip_response['location'].longitude, geoip_response['location'].latitude, geoip_response['location'].longitude)
+        except:
+            geoip_response['openstreet_url'] = None
 
         # Cache headers
         expires = datetime.utcnow() + timedelta(minutes=1)
@@ -85,6 +85,7 @@ class MainHandler(tornado.web.RequestHandler):
         self.set_header('Expires', expires)
         self.set_header('Max-age', '60')
         self.set_header('Cache-control', 'public')
+        self.set_header('vary', remote_ip)
 
         # Checking remote_ip or query string?
         if self.get_arguments('json'):
@@ -94,16 +95,16 @@ class MainHandler(tornado.web.RequestHandler):
             # Review this header workaround
             self.set_header('Content-Type', 'application/json')
             self.write(geoip_response)
-
         else:
             self.render('index.html',
-                        not_my_ip=not_my_ip, remote_ip=remote_ip, user_agent=user_agent,
-                        country_iso_code=geoip_response['country'].iso_code,
-                        country_name=geoip_response['country'].name,
+                        not_my_ip=not_my_ip, remote_ip=remote_ip,
+                        country_iso_code=geoip_response['registered_country'].iso_code,
+                        country_name=geoip_response['registered_country'].name,
                         city_names_en=geoip_response['city'].name,
                         latitude=geoip_response['location'].latitude,
                         longitude=geoip_response['location'].longitude,
                         time_zone=geoip_response['location'].time_zone,
+                        openstreet_url=geoip_response['openstreet_url'],
                         geoipDbMtime=time.ctime(os.path.getmtime(geoipDbPath))
                         )
 
