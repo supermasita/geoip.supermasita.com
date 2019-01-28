@@ -21,6 +21,10 @@ class TestStringMethods(unittest.TestCase):
     def test_tornado(self):
         geoip_response = requests.get("http://127.0.0.1:8888/?ip=200.42.143.3")
         self.assertRegex(geoip_response.text, "IP: <b>200.42.143.3<\/b>")
+    
+    def test_tornado(self):
+        geoip_response = requests.get("http://127.0.0.1:8888/?ip=23.155.53.186")
+        self.assertRegex(geoip_response.text, "IP: <b>23.155.53.186<\/b>")
 
 if __name__ == '__main__':
     unittest.main()
