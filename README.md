@@ -1,6 +1,10 @@
+This project has been deprecated and replaced by: https://github.com/supermasita/geoip-flask
+
 # Python Tornado based GeoLite2 City service
 * Get information for your IP or any other (use "/?ip=xxx.xxxx.xxx.xxx")
 * Choose HTML or JSON output
+
+
 
 [![Build Status](https://travis-ci.org/supermasita/geoip.supermasita.com.svg?branch=master)](https://travis-ci.org/supermasita/geoip.supermasita.com)
 
